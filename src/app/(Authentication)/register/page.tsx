@@ -9,9 +9,7 @@ import {
 } from '@/components/ui/card'
 import Link from 'next/link'
 
-export default function SignInPage(props: {
-  searchParams: { callbackUrl: string | undefined }
-}) {
+export default function SignInPage() {
   return (
     <main>
       <Container className="mt-24">

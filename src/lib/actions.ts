@@ -2,11 +2,19 @@
 
 import { AuthError } from 'next-auth'
 import { connectDb } from './dbConnect'
-import { loginFormSchema, registerFormSchema } from './zodSchema'
+import {
+  loginFormSchema,
+  presetFormSchema,
+  PresetFormType,
+  registerFormSchema,
+} from './zodSchema'
 import { z, ZodError } from 'zod'
 import { signIn, signOut } from '@/auth'
 import User from './models/user'
 import bcrypt from 'bcryptjs'
+import { PresetType } from './models/schemas/preset'
+import getUserModel from './models/user'
+import mongoose from 'mongoose'
 
 export async function signInAction(
   prevState: undefined,
@@ -90,4 +98,28 @@ export async function register(
 
 export const signOutAction = async () => {
   await signOut({ redirectTo: '/' })
+}
+
+export const addPreset = async ({
+  presetData,
+  userId,
+}: {
+  presetData: PresetFormType
+  userId: string | undefined
+}) => {
+  try {
+    if (!userId) throw new Error('No user id provided.')
+    await connectDb()
+    const userModel = await getUserModel()
+    const objectId = new mongoose.Types.ObjectId(userId)
+    const user = await userModel.findById(objectId)
+
+    if (!user) throw new Error('Failed to find a user')
+    const validatedPreset = presetFormSchema.parse(presetData)
+
+    const res = user.presets.push(validatedPreset)
+    console.log('added preset: ', res)
+  } catch (error) {
+    console.log(`Failed to add a preset: `, error)
+  }
 }

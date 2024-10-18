@@ -5,7 +5,7 @@ import { Context } from '../nav-context-provider'
 import navigationLinks from './data'
 import Text from '../typography/text'
 import Link from 'next/link'
-import { ChevronRightIcon, MenuIcon, Moon, Sun } from 'lucide-react'
+import { ChevronRightIcon, MenuIcon } from 'lucide-react'
 import Logo from '../logo'
 import {
   DropdownMenu,

@@ -13,8 +13,8 @@ const getUser = async (email: string) => {
   const user = await schema.findOne({ email })
 
   if (!user) return null
-  const { username, avatar, password } = user
-  return { username, avatar, email, password }
+  const { username, avatar, password, _id } = user
+  return { username, avatar, email, password, id: _id }
 }
 
 const providers: Provider[] = [
@@ -29,7 +29,12 @@ const providers: Provider[] = [
       const passwordsMatch = await bcrypt.compare(password, user.password)
 
       if (passwordsMatch)
-        return { name: user.username, email, image: user.avatar }
+        return {
+          name: user.username,
+          email,
+          image: user.avatar,
+          id: user.id.toString(),
+        }
 
       return null
     },
@@ -40,14 +45,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: '/signin',
   },
-  session: {
-    strategy: 'jwt', // Optional: Using JWT for session management.
-    maxAge: 60 * 60 * 24 * 30, // 30 days, or adjust as necessary
-    updateAge: 60 * 60 * 24, // 1 day
-  },
   callbacks: {
+    async session({ session, token }) {
+      if (token && token.id) {
+        session.user.id = token.id as string // Explicitly casting to string
+      }
+      return session
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
+      }
+      return token
+    },
+
     async authorized({ auth, request: { nextUrl } }) {
-      let isLoggedIn = !!auth?.user
+      const isLoggedIn = !!auth?.user
 
       const onLandingPage = nextUrl.pathname === '/'
       let onPublicRoute = false
@@ -57,18 +70,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       navigationLinks.authentication.map((link) => {
         if (nextUrl.pathname === link.href) onPublicRoute = true
       })
-      console.log('The user is logged?: ', isLoggedIn)
 
       if (isLoggedIn) {
         if (onLandingPage) return Response.redirect(new URL('/home', nextUrl))
-        console.log('REturn TUREOIFJEOIWHFOIHWEIFHO')
         return true
-      } else {
-        if (onPublicRoute) return true
-
-        console.log('REturn FAAAAAAAAAAAALSE')
-        return false
       }
+      if (onPublicRoute) return true
+
+      return false
     },
   },
 })
