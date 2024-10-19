@@ -1,7 +1,7 @@
 'use client'
 import { challengeSettingsFormSchema } from '@/lib/zodSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -19,23 +19,27 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { PresetType } from '@/lib/models/schemas/preset'
 import AddPresetForm from './add-preset-form'
+import { getPresets } from '@/lib/dataActions'
+import { notFound } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 type challengeSettings = z.infer<typeof challengeSettingsFormSchema>
 const ChallengeSettingsForm = ({
   categories,
   presets,
-  userId,
 }: {
   categories: { id: number; name: string }[]
   presets: PresetType[]
 }) => {
+  const { data: session } = useSession()
+  if (!session) notFound()
+  const [presetsState, setPresets] = useState<PresetType[]>(presets)
   const settingsForm = useForm<challengeSettings>({
     resolver: zodResolver(challengeSettingsFormSchema),
     defaultValues: {
@@ -70,14 +74,6 @@ const ChallengeSettingsForm = ({
     }
   }
 
-  // Example of applying a preset
-  const examplePreset: challengeSettings = {
-    numberOfQuestions: 20,
-    category: '9',
-    difficulty: 'easy',
-    type: 'boolean',
-  }
-
   return (
     <div className="space-y-8">
       <div className="space-y-2">
@@ -107,7 +103,7 @@ const ChallengeSettingsForm = ({
               )}
             </SelectContent>
           </Select>
-          <AddPresetForm />
+          <AddPresetForm categories={categories} />
         </div>
       </div>
       <Form {...settingsForm}>

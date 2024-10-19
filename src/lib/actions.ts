@@ -100,13 +100,10 @@ export const signOutAction = async () => {
   await signOut({ redirectTo: '/' })
 }
 
-export const addPreset = async ({
-  presetData,
-  userId,
-}: {
-  presetData: PresetFormType
+export const addPreset = async (
+  presetData: PresetFormType,
   userId: string | undefined
-}) => {
+) => {
   try {
     if (!userId) throw new Error('No user id provided.')
     await connectDb()
@@ -117,9 +114,29 @@ export const addPreset = async ({
     if (!user) throw new Error('Failed to find a user')
     const validatedPreset = presetFormSchema.parse(presetData)
 
-    const res = user.presets.push(validatedPreset)
-    console.log('added preset: ', res)
+    const presetExists = user.presets.some(
+      (preset: PresetType) => preset.name === presetData.name
+    )
+    if (presetExists)
+      return {
+        message: 'Preset name is already used',
+        success: false,
+        errors: [
+          {
+            field: 'name',
+            message: 'Preset name is already used',
+          },
+        ],
+      }
+
+    user.presets.push(validatedPreset)
+    await user.save()
+    return { message: 'Preset has been added successfully.', success: true }
   } catch (error) {
     console.log(`Failed to add a preset: `, error)
+    return {
+      message: 'Failed to add a preset.',
+      success: false,
+    }
   }
 }

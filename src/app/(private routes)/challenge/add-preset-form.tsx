@@ -1,4 +1,5 @@
-import React from 'react'
+'use client'
+import React, { useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -17,14 +18,71 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { presetFormSchema, PresetFormType } from '@/lib/zodSchema'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { addPreset } from '@/lib/actions'
+import { useToast } from '@/hooks/use-toast'
 
-const AddPresetForm = () => {
+const AddPresetForm = ({
+  categories,
+}: {
+  categories: { id: number; name: string }[]
+}) => {
+  const { toast } = useToast()
+  const [errorState, setErrorState] = useState([])
+  const [open, setOpen] = useState(false)
   const { data: session } = useSession()
-  console.log(session)
-
   if (!session) notFound()
+
+  const form = useForm<PresetFormType>({
+    resolver: zodResolver(presetFormSchema),
+    defaultValues: {
+      name: '',
+      settings: {
+        category: 'any',
+        difficulty: 'any',
+        numberOfQuestions: 10,
+        type: 'any',
+      },
+    },
+  })
+  const { setError, formState } = form
+  async function onSubmit(values: PresetFormType) {
+    const res = await addPreset(values, session?.user?.id)
+    if (!res.success) {
+      if (res.errors)
+        res.errors?.map((error) =>
+          setError(error.field, { type: 'server', message: error.message })
+        )
+    }
+    if (res.success) {
+      toast({
+        title: res.message,
+      })
+      setOpen(false)
+    }
+  }
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <TooltipProvider>
           <Tooltip>
@@ -48,12 +106,150 @@ const AddPresetForm = () => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{session.user?.id}</DialogTitle>
+          <DialogTitle>Add a New Preset</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+            Create and save your custom challenge settings for future use.
           </DialogDescription>
         </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Preset Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Preset Name" type="text" {...field} />
+                  </FormControl>
+                  <FormDescription></FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="settings.numberOfQuestions"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Number of Questions</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="max number is 50"
+                      type="number"
+                      {...field}
+                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    />
+                  </FormControl>
+                  <FormDescription></FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="settings.category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select
+                    {...field}
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Please Select a Category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="any">Any Category</SelectItem>
+                      {categories.map((category) => (
+                        <SelectItem
+                          key={`category-item-preset: ${category.id}`}
+                          value={`${category.id}`}
+                        >
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription></FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="settings.difficulty"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Difficulty</FormLabel>
+                  <Select
+                    {...field}
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Please Select a Difficulty" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="any">Any Difficulty</SelectItem>
+                      <SelectItem value="easy">Easy</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="hard">Hard</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription></FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="settings.type"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Questions Type</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      {...field}
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col space-y-1"
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="multiple" />
+                        </FormControl>
+                        <FormLabel>Multiple</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="boolean" />
+                        </FormControl>
+                        <FormLabel>True/False</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="any" />
+                        </FormControl>
+                        <FormLabel>Any</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" disabled={formState.isSubmitting}>
+              Add Preset {formState.isSubmitting ? <p>Loading...</p> : ''}
+            </Button>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   )

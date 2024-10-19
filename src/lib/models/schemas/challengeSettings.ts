@@ -12,8 +12,9 @@ export const ChallengeSettingsSchema = new Schema({
     required: true,
   },
   category: {
-    type: Number,
+    type: String,
     required: true,
+    default: 'any',
   },
   difficulty: {
     type: String,

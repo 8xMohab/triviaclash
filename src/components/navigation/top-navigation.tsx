@@ -1,11 +1,9 @@
 import clsx from 'clsx'
 import React, { useContext } from 'react'
-import { Context } from '../nav-context-provider'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import Logo from '../logo'
-import { auth, signIn } from '@/auth'
+import { auth } from '@/auth'
 import ToggleNav from '../toggleNav'
-import { redirect } from 'next/navigation'
 
 const TopNavigation: React.FC<React.ComponentPropsWithoutRef<'div'>> = async (
   props
