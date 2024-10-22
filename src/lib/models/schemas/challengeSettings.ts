@@ -6,26 +6,29 @@ export type ChallengeSettingsType = mongoose.InferSchemaType<
 >
 
 // custom preset schema
-export const ChallengeSettingsSchema = new Schema({
-  numberOfQuestions: {
-    type: Number,
-    required: true,
+export const ChallengeSettingsSchema = new Schema(
+  {
+    numberOfQuestions: {
+      type: Number,
+      required: true,
+    },
+    category: {
+      type: String,
+      required: true,
+      default: 'any',
+    },
+    difficulty: {
+      type: String,
+      enum: ['easy', 'normal', 'hard', 'any'],
+      default: 'any',
+      required: true,
+    },
+    type: {
+      type: String,
+      enum: ['multiple', 'boolean', 'any'],
+      default: 'any',
+      required: true,
+    },
   },
-  category: {
-    type: String,
-    required: true,
-    default: 'any',
-  },
-  difficulty: {
-    type: String,
-    enum: ['easy', 'normal', 'hard', 'any'],
-    default: 'any',
-    required: true,
-  },
-  type: {
-    type: String,
-    enum: ['multiple', 'boolean', 'any'],
-    default: 'any',
-    required: true,
-  },
-})
+  { _id: false }
+)

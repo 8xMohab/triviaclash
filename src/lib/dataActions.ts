@@ -40,7 +40,8 @@ export const getPresets = async (userId: string | undefined) => {
 
     if (!user) throw new Error('Failed to find a user')
 
-    return user.presets
+    const { presets } = user
+    return presets
   } catch (error) {
     console.log('Failed to get the Presets... Error: ', error)
     return []

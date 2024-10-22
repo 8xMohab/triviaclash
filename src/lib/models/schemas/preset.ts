@@ -5,14 +5,17 @@ import { ChallengeSettingsSchema } from './challengeSettings'
 export type PresetType = mongoose.InferSchemaType<typeof PresetSchema>
 
 // custom preset schema
-export const PresetSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
+export const PresetSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    settings: {
+      type: ChallengeSettingsSchema,
+      required: true,
+    },
   },
-  settings: {
-    type: ChallengeSettingsSchema,
-    required: true,
-  },
-})
+  { _id: false }
+)
