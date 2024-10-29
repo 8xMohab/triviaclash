@@ -10,7 +10,7 @@ import {
 import Link from 'next/link'
 
 export default function SignInPage(props: {
-  searchParams: { callbackUrl: string | undefined }
+  searchParams: Promise<{ callbackUrl: string | undefined }>
 }) {
   return (
     <main>
@@ -25,7 +25,7 @@ export default function SignInPage(props: {
           <CardContent className="space-y-8 flex flex-col">
             <SignInForm />
             <Link href="/register" className="text-muted-foreground text-sm">
-              Don't have an account?{' '}
+              Don@apos;t have an account?
               <span className="underline">Create Account</span>
             </Link>
           </CardContent>
