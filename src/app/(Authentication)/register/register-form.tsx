@@ -1,7 +1,7 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { z } from 'zod'
-import { register } from '@/lib/actions'
+import { authenticateUser, createUser } from '@/lib/actions'
 import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -18,12 +18,13 @@ import {
 import { Input } from '@/components/ui/input'
 import { registerFormSchema } from '@/lib/zodSchema'
 import { useToast } from '@/hooks/use-toast'
-import { redirect } from 'next/navigation'
+import { redirect, useSearchParams } from 'next/navigation'
 
 const RegistrationForm = () => {
-  const [state, setState] = useState({ message: '' })
-  const [doRedirect, setDoRedirect] = useState(false)
-  const [pending, setPending] = useState(false)
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl')
+  const redirectURL = callbackUrl || '/home'
+  const [errorMessage, setErrorMessage] = useState('')
   const { toast } = useToast()
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
@@ -34,26 +35,33 @@ const RegistrationForm = () => {
     },
   })
 
+  const {
+    setError,
+    formState: { isSubmitting },
+  } = form
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
-    setPending(true)
-    const res = await register(undefined, values)
-    setPending(false)
-    if (res.toast) {
-      toast({
-        title: res.toast.title,
-        description: res.toast.description,
-      })
-      setDoRedirect(true)
+    const { success, error, fields } = await createUser(values)
+    if (error) {
+      setErrorMessage(error)
+      if (fields) {
+        fields.map((field) => {
+          if(field.name === "name") return
+          setError(field.name, { message: field.message })
+        })
+      }
     }
-    if (res.message) {
-      setState({ message: res.message })
+    if (success) {
+      toast({
+        title: 'User has been created successfuly.',
+        description: success,
+      })
+      const { error, success: signInSucess } = await authenticateUser(values)
+      if (error) {
+        setErrorMessage(`Failed to sign in. ${error}`)
+      }
+      if (signInSucess) redirect(redirectURL)
     }
   }
-
-  useEffect(() => {
-    if (doRedirect) redirect('/')
-  }, [doRedirect])
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -100,9 +108,9 @@ const RegistrationForm = () => {
           )}
         />
 
-        {state?.message ? (
+        {errorMessage ? (
           <p className="text-sm text-destructive" aria-live="polite">
-            {state.message}
+            {errorMessage}
           </p>
         ) : (
           ''
@@ -111,7 +119,7 @@ const RegistrationForm = () => {
           type="submit"
           className="min-w-32 flex items-center justify-center"
         >
-          {pending ? (
+          {isSubmitting ? (
             <div className="">
               <Loader2 className="h-5 w-5 animate-spin" />
             </div>

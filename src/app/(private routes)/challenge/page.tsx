@@ -1,6 +1,6 @@
 import React from 'react'
 import ChallengeSettingsForm from './challenge-settings-form'
-import { getCategories, getPresets } from '@/lib/dataActions'
+import { getCategories, getPresets } from '@/lib/data'
 import Container from '@/components/container'
 import {
   Card,

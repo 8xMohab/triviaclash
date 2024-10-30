@@ -9,9 +9,11 @@ import {
 } from '@/components/ui/card'
 import Link from 'next/link'
 
-export default function SignInPage(props: {
+export default async function SignInPage(props: {
   searchParams: Promise<{ callbackUrl: string | undefined }>
 }) {
+  const searchParams = await props.searchParams
+
   return (
     <main>
       <Container className="mt-24">
@@ -24,9 +26,12 @@ export default function SignInPage(props: {
           </CardHeader>
           <CardContent className="space-y-8 flex flex-col">
             <SignInForm />
-            <Link href="/register" className="text-muted-foreground text-sm">
-              Don@apos;t have an account?
-              <span className="underline">Create Account</span>
+            <Link
+              href={`/register?callbackUrl=${searchParams.callbackUrl}`}
+              className="text-muted-foreground text-sm"
+            >
+              Don&apos;t have an account?
+              <span className="underline"> Create Account</span>
             </Link>
           </CardContent>
         </Card>

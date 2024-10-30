@@ -19,7 +19,7 @@ export const ChallengeSettingsSchema = new Schema(
     },
     difficulty: {
       type: String,
-      enum: ['easy', 'normal', 'hard', 'any'],
+      enum: ['easy', 'medium', 'hard', 'any'],
       default: 'any',
       required: true,
     },

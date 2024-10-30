@@ -63,16 +63,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const isLoggedIn = !!auth?.user
 
       const onLandingPage = nextUrl.pathname === '/'
+      let onAuthenticationPages = false
       let onPublicRoute = false
       navigationLinks.public.map((link) => {
         if (nextUrl.pathname === link.href) onPublicRoute = true
       })
       navigationLinks.authentication.map((link) => {
-        if (nextUrl.pathname === link.href) onPublicRoute = true
+        if (nextUrl.pathname === link.href) {
+          onPublicRoute = true
+          onAuthenticationPages = true
+        }
       })
 
       if (isLoggedIn) {
-        if (onLandingPage) return Response.redirect(new URL('/home', nextUrl))
+        if (onLandingPage || onAuthenticationPages) return Response.redirect(new URL('/home', nextUrl))
         return true
       }
       if (onPublicRoute) return true

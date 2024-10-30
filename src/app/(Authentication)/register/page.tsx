@@ -23,8 +23,8 @@ export default function SignInPage() {
           <CardContent className="space-y-8 flex flex-col">
             <RegistrationForm />
             <Link href="/signin" className="text-muted-foreground text-sm">
-              Already have an account?{' '}
-              <span className="underline">Sign in </span>
+              Already have an account?
+              <span className="underline"> Sign in </span>
             </Link>
           </CardContent>
         </Card>

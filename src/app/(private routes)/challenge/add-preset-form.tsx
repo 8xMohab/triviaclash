@@ -41,14 +41,19 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { addPreset } from '@/lib/actions'
 import { useToast } from '@/hooks/use-toast'
+import { PresetType } from '@/lib/models/schemas/preset'
 
 const AddPresetForm = ({
   categories,
+  presetsList,
+  setPresetsList,
 }: {
   categories: { id: number; name: string }[]
+  presetsList: PresetType[]
+  setPresetsList: React.Dispatch<React.SetStateAction<PresetType[]>>
 }) => {
   const { toast } = useToast()
-  const [errorState, setErrorState] = useState([])
+  const [errorMessage, setErrorMessage] = useState('')
   const [open, setOpen] = useState(false)
   const { data: session } = useSession()
   if (!session) notFound()
@@ -65,19 +70,27 @@ const AddPresetForm = ({
       },
     },
   })
-  const { setError, formState } = form
+  const { formState, setError } = form
   async function onSubmit(values: PresetFormType) {
-    const res = await addPreset(values, session?.user?.id)
-    if (!res.success) {
-      if (res.errors)
-        res.errors?.map((error) =>
-          setError(error.field, { type: 'server', message: error.message })
-        )
+    const { error, success, fields } = await addPreset(
+      values,
+      session?.user?.id
+    )
+    if (error) {
+      setErrorMessage(error)
+      if (fields) {
+        fields.map((field) => {
+          if (field.name === 'name')
+            setError(field.name, { message: field.message })
+        })
+      }
     }
-    if (res.success) {
+    if (success) {
       toast({
-        title: res.message,
+        title: success,
       })
+      setPresetsList([...presetsList, values])
+
       setOpen(false)
     }
   }
@@ -104,7 +117,7 @@ const AddPresetForm = ({
           </Tooltip>
         </TooltipProvider>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="w-[280px] md:w-fit m-auto">
         <DialogHeader>
           <DialogTitle>Add a New Preset</DialogTitle>
           <DialogDescription>
@@ -244,6 +257,13 @@ const AddPresetForm = ({
                 </FormItem>
               )}
             />
+            {errorMessage ? (
+              <p className="text-sm text-destructive" aria-live="polite">
+                {errorMessage}
+              </p>
+            ) : (
+              ''
+            )}
 
             <Button type="submit" disabled={formState.isSubmitting}>
               Add Preset {formState.isSubmitting ? <p>Loading...</p> : ''}

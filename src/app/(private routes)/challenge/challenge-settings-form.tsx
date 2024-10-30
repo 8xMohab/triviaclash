@@ -1,7 +1,7 @@
 'use client'
 import { challengeSettingsFormSchema } from '@/lib/zodSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -25,7 +25,6 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { PresetType } from '@/lib/models/schemas/preset'
 import AddPresetForm from './add-preset-form'
-import { getPresets } from '@/lib/dataActions'
 import { notFound } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 
@@ -39,7 +38,7 @@ const ChallengeSettingsForm = ({
 }) => {
   const { data: session } = useSession()
   if (!session) notFound()
-  const [presetsState, setPresets] = useState<PresetType[]>(presets)
+  const [presetsList, setPresetsList] = useState<PresetType[]>(presets)
   const settingsForm = useForm<challengeSettings>({
     resolver: zodResolver(challengeSettingsFormSchema),
     defaultValues: {
@@ -50,30 +49,20 @@ const ChallengeSettingsForm = ({
     },
   })
 
+  const { setValue } = settingsForm
+
+  // Function to update form values based on a preset
+  const applyPreset = (preset: challengeSettings) => {
+    Object.entries(preset).map(([name, value]) => {
+      setValue(name as keyof challengeSettings, value)
+    })
+  }
+
   function onSubmit(values: challengeSettings) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values)
   }
-
-  const { setValue } = settingsForm
-
-  // Function to update form values based on a preset
-  const applyPreset = (preset: challengeSettings) => {
-    if (preset.numberOfQuestions) {
-      setValue('numberOfQuestions', preset.numberOfQuestions)
-    }
-    if (preset.category) {
-      setValue('category', preset.category)
-    }
-    if (preset.difficulty) {
-      setValue('difficulty', preset.difficulty)
-    }
-    if (preset.type) {
-      setValue('type', preset.type)
-    }
-  }
-
   return (
     <div className="space-y-8">
       <div className="space-y-2">
@@ -87,8 +76,8 @@ const ChallengeSettingsForm = ({
               <SelectValue placeholder="Select a Preset" />
             </SelectTrigger>
             <SelectContent>
-              {presets.length > 0 ? (
-                presets.map((preset, index) => (
+              {presetsList.length > 0 ? (
+                presetsList.map((preset, index) => (
                   <SelectItem
                     value={JSON.stringify(preset.settings)}
                     key={`preset-item:${preset.name}-${index}`}
@@ -103,7 +92,11 @@ const ChallengeSettingsForm = ({
               )}
             </SelectContent>
           </Select>
-          <AddPresetForm categories={categories} />
+          <AddPresetForm
+            categories={categories}
+            presetsList={presetsList}
+            setPresetsList={setPresetsList}
+          />
         </div>
       </div>
       <Form {...settingsForm}>

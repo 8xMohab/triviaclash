@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
@@ -16,13 +16,18 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { loginFormSchema } from '@/lib/zodSchema'
-import { signInAction } from '@/lib/actions'
-import { redirect } from 'next/navigation'
+import { authenticateUser } from '@/lib/actions'
+import { redirect, useSearchParams } from 'next/navigation'
 
 const SignInForm = () => {
-  const [state, setState] = useState({ message: '' })
-  const [doRedirect, setDoRedirect] = useState(false)
-  const [pending, setPending] = useState(false)
+  // we have to do the redirecttion from the client because
+  // the way i implemented the server actions they don't work
+  // with the server 504 requests
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl')
+  const redirectURL = callbackUrl || '/home'
+
+  const [errorMessage, setErrorMessage] = useState('')
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -30,22 +35,18 @@ const SignInForm = () => {
       password: '',
     },
   })
+  const {
+    formState: { isSubmitting },
+  } = form
 
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    setPending(true)
-    const res = await signInAction(undefined, values)
-    setPending(false)
-    if (res.success) {
-      setDoRedirect(true)
+    const { error, success } = await authenticateUser(values)
+    if (error) {
+      setErrorMessage(error)
     }
-    if (res.message) {
-      setState({ message: res.message })
-    }
+    if (success) redirect(redirectURL)
   }
 
-  useEffect(() => {
-    if (doRedirect) redirect('/')
-  }, [doRedirect])
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -78,19 +79,19 @@ const SignInForm = () => {
           )}
         />
 
-        {state?.message ? (
+        {errorMessage ? (
           <p className="text-sm text-destructive" aria-live="polite">
-            {state.message}
+            {errorMessage}
           </p>
         ) : (
           ''
         )}
         <Button
           type="submit"
-          disabled={pending}
+          disabled={isSubmitting}
           className="min-w-20 flex items-center justify-center"
         >
-          {pending ? (
+          {isSubmitting ? (
             <div className="">
               <Loader2 className="h-5 w-5 animate-spin" />
             </div>
