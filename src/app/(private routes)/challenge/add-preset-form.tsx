@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { PlusIcon } from 'lucide-react'
+import { Loader2, PlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { notFound } from 'next/navigation'
 import {
@@ -70,7 +70,10 @@ const AddPresetForm = ({
       },
     },
   })
-  const { formState, setError } = form
+  const {
+    formState: { isSubmitting },
+    setError,
+  } = form
   async function onSubmit(values: PresetFormType) {
     const { error, success, fields } = await addPreset(
       values,
@@ -151,7 +154,11 @@ const AddPresetForm = ({
                       placeholder="max number is 50"
                       type="number"
                       {...field}
-                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value === '' ? '' : e.target.valueAsNumber
+                        )
+                      }
                     />
                   </FormControl>
                   <FormDescription></FormDescription>
@@ -265,8 +272,14 @@ const AddPresetForm = ({
               ''
             )}
 
-            <Button type="submit" disabled={formState.isSubmitting}>
-              Add Preset {formState.isSubmitting ? <p>Loading...</p> : ''}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <div className="">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                </div>
+              ) : (
+                'Add Preset'
+              )}
             </Button>
           </form>
         </Form>

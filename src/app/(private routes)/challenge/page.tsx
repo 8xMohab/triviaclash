@@ -21,7 +21,7 @@ const Challenge = async () => {
   return (
     <main>
       <Container className="mt-24">
-        <Card className="w-[280px] md:w-[350px] lg:w-[400px] m-auto">
+        <Card className="w-full md:w-[350px] lg:w-[400px] m-auto">
           <CardHeader>
             <CardTitle>Match Settings</CardTitle>
             <CardDescription>

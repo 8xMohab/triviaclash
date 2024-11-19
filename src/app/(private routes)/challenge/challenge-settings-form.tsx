@@ -25,10 +25,13 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { PresetType } from '@/lib/models/schemas/preset'
 import AddPresetForm from './add-preset-form'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { createChallenge } from '@/lib/actions'
+import { Loader2 } from 'lucide-react'
+import Link from 'next/link'
 
-type challengeSettings = z.infer<typeof challengeSettingsFormSchema>
+export type challengeSettings = z.infer<typeof challengeSettingsFormSchema>
 const ChallengeSettingsForm = ({
   categories,
   presets,
@@ -36,6 +39,8 @@ const ChallengeSettingsForm = ({
   categories: { id: number; name: string }[]
   presets: PresetType[]
 }) => {
+  const [errorMessage, setErrorMessage] = useState('')
+  const [activeChallenge, setActiveChallenge] = useState('')
   const { data: session } = useSession()
   if (!session) notFound()
   const [presetsList, setPresetsList] = useState<PresetType[]>(presets)
@@ -49,7 +54,10 @@ const ChallengeSettingsForm = ({
     },
   })
 
-  const { setValue } = settingsForm
+  const {
+    setValue,
+    formState: { isSubmitting },
+  } = settingsForm
 
   // Function to update form values based on a preset
   const applyPreset = (preset: challengeSettings) => {
@@ -58,10 +66,16 @@ const ChallengeSettingsForm = ({
     })
   }
 
-  function onSubmit(values: challengeSettings) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  async function onSubmit(values: challengeSettings) {
+    const { success, error, challengeId } = await createChallenge(
+      values,
+      session?.user?.id
+    )
+    if (success) redirect(`/challenge/${success}`)
+    if (error) {
+      setErrorMessage(error)
+      if (challengeId) setActiveChallenge(challengeId)
+    }
   }
   return (
     <div className="space-y-8">
@@ -115,7 +129,11 @@ const ChallengeSettingsForm = ({
                     placeholder="max number is 50"
                     type="number"
                     {...field}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value === '' ? '' : e.target.valueAsNumber
+                      )
+                    }
                   />
                 </FormControl>
                 <FormDescription></FormDescription>
@@ -221,8 +239,29 @@ const ChallengeSettingsForm = ({
               </FormItem>
             )}
           />
-
-          <Button type="submit">Start Challenge!</Button>
+          {errorMessage ? (
+            <p className="text-sm text-destructive" aria-live="polite">
+              <span> {errorMessage} </span>
+              {activeChallenge ? (
+                <Link href={`/challenge/${activeChallenge}`} className='underline'>
+                  go back to it
+                </Link>
+              ) : (
+                ''
+              )}
+            </p>
+          ) : (
+            ''
+          )}
+          <Button type="submit">
+            {isSubmitting ? (
+              <div className="">
+                <Loader2 className="h-5 w-5 animate-spin" />
+              </div>
+            ) : (
+              'Start Challenge!'
+            )}
+          </Button>
         </form>
       </Form>
     </div>
