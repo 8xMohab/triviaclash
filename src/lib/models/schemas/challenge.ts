@@ -3,6 +3,10 @@ import { ChallengeSettingsSchema } from './challengeSettings'
 import { QuestionSchema } from './question'
 
 export type ChallengeType = mongoose.InferSchemaType<typeof ChallengeSchema>
+export type ChallengeSubsetType = Pick<
+  ChallengeType,
+  'questions' | 'settings' | 'status' | 'tries'
+>;
 export const ChallengeSchema = new Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -11,7 +15,7 @@ export const ChallengeSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'finished', 'failed'],
+    enum: ['active', 'finished'],
     required: true,
     default: 'active',
   },
