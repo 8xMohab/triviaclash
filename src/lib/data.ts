@@ -3,6 +3,9 @@
 import mongoose from 'mongoose'
 import { connectDb } from './dbConnect'
 import getUserModel from './models/user'
+import { ChallengeType } from './models/schemas/challenge'
+import getChallengeModel from './models/challenge'
+import { shuffleArray } from './utils'
 
 // local categories
 const localCategories = [
@@ -68,5 +71,84 @@ export const getPresets = async (userId: string | undefined) => {
   } catch (error) {
     console.log('Failed to get the Presets... Error: ', error)
     return []
+  }
+}
+
+export const getActiveChallenge = async (
+  userId: string | undefined,
+  challengeId: string | undefined
+): Promise<{ challenge?: ChallengeType; error?: string }> => {
+  try {
+    if (!userId) throw new Error('No user id provided.')
+    if (!challengeId) throw new Error('No challenge id provided.')
+    await connectDb()
+
+    const challengeModel = await getChallengeModel()
+    const activeChallenge = await challengeModel
+      .findOne({
+        user: userId,
+        _id: challengeId,
+        status: 'active',
+      })
+      .lean()
+    if (!activeChallenge) throw new Error('Challenge was not found.')
+
+    // delete the correct answer and add it to the list of incorrect answers
+    // and randomize the array
+    activeChallenge.questions.map((question) => {
+      if (question.correct_answer)
+        question.incorrect_answers.push(question.correct_answer)
+
+      delete question.correct_answer
+
+      question.incorrect_answers = shuffleArray(question.incorrect_answers)
+    })
+
+    return {
+      challenge: {
+        questions: activeChallenge.questions,
+        settings: activeChallenge.settings,
+        status: activeChallenge.status,
+        tries: activeChallenge.tries,
+      },
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      return { error: error.message }
+    }
+    return { error: 'Something went wrong.' }
+  }
+}
+
+export const getChallenge = async (
+  userId: string | undefined,
+  challengeId: string | undefined
+): Promise<{ challenge?: ChallengeType; error?: string }> => {
+  try {
+    if (!userId) throw new Error('No user id provided.')
+    if (!challengeId) throw new Error('No challenge id provided.')
+    await connectDb()
+
+    const challengeModel = await getChallengeModel()
+    const activeChallenge = await challengeModel
+      .findOne({
+        user: userId,
+        _id: challengeId,
+      })
+      .lean()
+    if (!activeChallenge) throw new Error('Challenge was not found.')
+    return {
+      challenge: {
+        questions: activeChallenge.questions,
+        settings: activeChallenge.settings,
+        status: activeChallenge.status,
+        tries: activeChallenge.tries,
+      },
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      return { error: error.message }
+    }
+    return { error: 'Something went wrong.' }
   }
 }

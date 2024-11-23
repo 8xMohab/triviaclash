@@ -216,3 +216,28 @@ export const createChallenge = async (
     }
   }
 }
+
+export const addAnswer = async (
+  challengeId: string | undefined,
+  answers: Array<string>
+): Promise<State> => {
+  try {
+    if (!challengeId) throw new Error('No challenge id provided.')
+    const challengeModel = await getChallengeModel()
+    await connectDb()
+
+    const objectId = new mongoose.Types.ObjectId(challengeId)
+    const challenge = await challengeModel.findById(objectId)
+    if (!challenge) throw new Error('Failed to find challenge')
+
+    challenge.tries.push(answers)
+    challenge.status = 'finished'
+    await challenge.save()
+    return { success: `${challenge.tries.length}` }
+  } catch (error) {
+    if (error instanceof Error) return { error: `${error.message}` }
+    return {
+      error: 'Failed to create challenge.',
+    }
+  }
+}

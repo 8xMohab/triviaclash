@@ -1,7 +1,8 @@
 import mongoose, { Schema } from 'mongoose'
 import { ChallengeSettingsSchema } from './challengeSettings'
-import { QuestionSchema } from './question' 
+import { QuestionSchema } from './question'
 
+export type ChallengeType = mongoose.InferSchemaType<typeof ChallengeSchema>
 export const ChallengeSchema = new Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,

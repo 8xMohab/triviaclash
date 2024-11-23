@@ -23,7 +23,6 @@ export const QuestionSchema = new Schema(
     },
     correct_answer: {
       type: String,
-      required: true,
     },
     incorrect_answers: {
       type: [String],

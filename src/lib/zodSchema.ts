@@ -73,3 +73,7 @@ export const presetFormSchema = z.object({
 })
 // Type for the form based on the schema
 export type PresetFormType = z.infer<typeof presetFormSchema>
+
+export const AnsweringFormSchema = z.object({
+  user_answer: z.string({ message: 'Please choose an answer.' }),
+})
