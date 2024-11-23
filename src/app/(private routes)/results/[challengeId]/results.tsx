@@ -59,8 +59,11 @@ const QuestionsResult = ({ challenge }: { challenge: ChallengeSubsetType }) => {
                         className={clsx(
                           'md:w-1/2 p-2 rounded-lg',
                           answer === correct_answer
-                            ? 'bg-green-100'
-                            : 'bg-border',
+                            ? 'bg-success'
+                            : answer === tryAnswers[index] &&
+                              correct_answer !== tryAnswers[index]
+                            ? 'bg-danger'
+                            : 'bg-accent',
                           answer === tryAnswers[index]
                             ? 'border border-foreground'
                             : ''

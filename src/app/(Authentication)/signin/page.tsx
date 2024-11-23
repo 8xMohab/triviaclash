@@ -13,7 +13,8 @@ export default async function SignInPage(props: {
   searchParams: Promise<{ callbackUrl: string | undefined }>
 }) {
   const searchParams = await props.searchParams
-
+  const callback = searchParams.callbackUrl || ''
+  const redirectUrl = callback ? `?callback=${callback}` : ''
   return (
     <main>
       <Container className="mt-24">
@@ -27,7 +28,7 @@ export default async function SignInPage(props: {
           <CardContent className="space-y-8 flex flex-col">
             <SignInForm />
             <Link
-              href={`/register?callbackUrl=${searchParams.callbackUrl}`}
+              href={`/register${redirectUrl}`}
               className="text-muted-foreground text-sm"
             >
               Don&apos;t have an account?

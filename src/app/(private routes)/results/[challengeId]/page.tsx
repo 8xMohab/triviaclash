@@ -3,6 +3,7 @@ import { getChallenge } from '@/lib/data'
 import { notFound } from 'next/navigation'
 import React from 'react'
 import QuestionsResult from './results'
+import Score from './score'
 
 const Results = async ({
   params,
@@ -21,8 +22,12 @@ const Results = async ({
   if (!challenge) return notFound()
   if (challenge.status === 'active') return notFound()
 
-
-  return <QuestionsResult challenge={challenge} />
+  return (
+    <main className='mt-16 space-y-8'>
+      <Score challenge={challenge} />
+      <QuestionsResult challenge={challenge} />
+    </main>
+  )
 }
 
 export default Results

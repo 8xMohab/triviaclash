@@ -32,6 +32,8 @@ const config: Config = {
         },
       },
       colors: {
+        success: 'hsl(var(--success))',
+        danger: 'hsl(var(--danger))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {

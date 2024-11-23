@@ -38,7 +38,7 @@ const SmallPublicNav: React.FC<React.ComponentPropsWithoutRef<'div'>> = (
             <Link href="/signin">Login</Link>
           </Button>
           <Button variant="default">
-            <Link href="/regiser">Sign up</Link>
+            <Link href="/register">Sign up</Link>
           </Button>
         </div>
         <div>

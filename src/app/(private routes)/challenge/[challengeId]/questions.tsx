@@ -28,7 +28,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { addAnswer } from '@/lib/actions'
 import { redirect } from 'next/navigation'
 
-const userAnswers: Array<string> = []
+let userAnswers: Array<string> = []
 const Questions = ({
   challenge,
   challengeId,
@@ -46,13 +46,20 @@ const Questions = ({
 
   async function onSubmit(data: z.infer<typeof AnsweringFormSchema>) {
     // if we hit the limit we submit
-    if (userAnswers.length < challenge.questions.length)
+    if (userAnswers.length < challenge.questions.length) {
       userAnswers.push(data.user_answer)
-    if (currectQuestion + 1 < challenge.questions.length)
+      form.reset()
+    }
+    if (currectQuestion + 1 < challenge.questions.length) {
       setCurrectQuestion(currectQuestion + 1)
+    }
     if (userAnswers.length === challenge.questions.length) {
       const { success, error } = await addAnswer(challengeId, userAnswers)
-      if (success) redirect(`/results/${challengeId}?try=${success}`)
+      if (success) {
+        userAnswers = []
+        form.reset()
+        redirect(`/results/${challengeId}?try=${success}`)
+      }
       if (error) setErrorMessage(error)
     }
   }
@@ -84,7 +91,7 @@ const Questions = ({
                 control={form.control}
                 name="user_answer"
                 render={({ field }) => (
-                  <FormItem className="space-y-3">
+                  <FormItem className="space-y-8">
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
