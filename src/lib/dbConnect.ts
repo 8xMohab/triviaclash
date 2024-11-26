@@ -1,7 +1,9 @@
 // getting-started.js
 import mongoose from 'mongoose'
 
-const connection: { isConnected?: number } = {}
+if (typeof window !== 'undefined') {
+  throw new Error('dbConnect can only be used in a Node.js environment.')
+}
 
 export const connectDb = async () => {
   const mongoUri =

@@ -1,7 +1,7 @@
 'use client'
 import { challengeSettingsFormSchema } from '@/lib/zodSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -83,7 +83,7 @@ const ChallengeSettingsForm = ({
       if (challengeId) setActiveChallenge(challengeId)
     }
   }
-  async function startQuick() {
+  const startQuick = useCallback(async () => {
     const { success, error, challengeId } = await createChallenge(
       {
         type: 'any',
@@ -107,7 +107,7 @@ const ChallengeSettingsForm = ({
         ),
       })
     }
-  }
+  }, [session.user?.id, toast])
 
   useEffect(() => {
     let isQuick = false
@@ -116,7 +116,7 @@ const ChallengeSettingsForm = ({
       isQuick = true
     }
     if (isQuick) startQuick()
-  }, [])
+  }, [quickParam, startQuick])
 
   return (
     <div className="space-y-8">

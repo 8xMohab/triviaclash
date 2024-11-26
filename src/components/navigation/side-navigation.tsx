@@ -51,7 +51,7 @@ const SideNavigation: React.FC<React.ComponentPropsWithoutRef<'div'>> = (
     return () => {
       mediaQuery.removeEventListener('change', handleResize)
     }
-  }, [])
+  }, [setIsSideNavVisible])
   const formRef = useRef<HTMLFormElement>(null)
   return (
     <div

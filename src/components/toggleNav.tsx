@@ -8,7 +8,7 @@ const ToggleNav = () => {
   if (!context) {
     throw new Error('SideNavContext must be used within a NavContextProvider')
   }
-  const [isSideNavVisible, setIsSideNavVisible] = context
+  const [, setIsSideNavVisible] = context
   return (
     <MenuIcon className="w-6 h-6" onClick={() => setIsSideNavVisible(true)} />
   )

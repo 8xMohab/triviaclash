@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import React, { useContext } from 'react'
+import React from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import Logo from '../logo'
 import { auth } from '@/auth'
