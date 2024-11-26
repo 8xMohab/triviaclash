@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/card'
 import { decode } from 'he'
 import clsx from 'clsx'
-import { shuffleArray, validateTryParam } from '@/lib/utils'
+import { validateTryParam } from '@/lib/utils'
 import { useSearchParams } from 'next/navigation'
 
 const QuestionsResult = ({ challenge }: { challenge: ChallengeSubsetType }) => {
@@ -25,7 +25,7 @@ const QuestionsResult = ({ challenge }: { challenge: ChallengeSubsetType }) => {
       {challenge.questions.map(
         (
           { question, correct_answer, category, difficulty, incorrect_answers },
-          index
+          index,
         ) => {
           return (
             <Card key={`question: ${question}`}>
@@ -41,8 +41,8 @@ const QuestionsResult = ({ challenge }: { challenge: ChallengeSubsetType }) => {
                       difficulty === 'easy'
                         ? 'text-green-500'
                         : difficulty === 'medium'
-                        ? 'text-yellow-500'
-                        : 'text-destructive'
+                          ? 'text-yellow-500'
+                          : 'text-destructive',
                     )}
                   >
                     {difficulty}
@@ -62,11 +62,11 @@ const QuestionsResult = ({ challenge }: { challenge: ChallengeSubsetType }) => {
                             ? 'bg-success'
                             : answer === tryAnswers[index] &&
                               correct_answer !== tryAnswers[index]
-                            ? 'bg-danger'
-                            : 'bg-accent',
+                              ? 'bg-danger'
+                              : 'bg-accent',
                           answer === tryAnswers[index]
-                            ? 'border border-foreground'
-                            : ''
+                            ? 'border border-border'
+                            : '',
                         )}
                       >
                         {decode(answer)}
@@ -75,10 +75,16 @@ const QuestionsResult = ({ challenge }: { challenge: ChallengeSubsetType }) => {
                   </ul>
                 </div>
               </CardContent>
-              <CardFooter></CardFooter>
+              <CardFooter>
+                <span className={clsx(correct_answer === tryAnswers[index]? "text-green-500" : "text-red-500")}>
+                  {correct_answer === tryAnswers[index]
+                    ? 'Answer Correct'
+                    : 'Answer Incorrect'}
+                </span>
+              </CardFooter>
             </Card>
           )
-        }
+        },
       )}
     </div>
   )

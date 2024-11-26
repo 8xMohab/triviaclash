@@ -1,7 +1,7 @@
 'use client'
 import { challengeSettingsFormSchema } from '@/lib/zodSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -22,14 +22,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { PresetType } from '@/lib/models/schemas/preset'
 import AddPresetForm from './add-preset-form'
-import { notFound, redirect } from 'next/navigation'
+import { notFound, redirect, useSearchParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { createChallenge } from '@/lib/actions'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { useToast } from '@/hooks/use-toast'
+import { ToastAction } from '@/components/ui/toast'
 
 export type challengeSettings = z.infer<typeof challengeSettingsFormSchema>
 const ChallengeSettingsForm = ({
@@ -39,6 +42,9 @@ const ChallengeSettingsForm = ({
   categories: { id: number; name: string }[]
   presets: PresetType[]
 }) => {
+  const searchParams = useSearchParams()
+  const quickParam = searchParams.get('quick')
+  const { toast } = useToast()
   const [errorMessage, setErrorMessage] = useState('')
   const [activeChallenge, setActiveChallenge] = useState('')
   const { data: session } = useSession()
@@ -69,7 +75,7 @@ const ChallengeSettingsForm = ({
   async function onSubmit(values: challengeSettings) {
     const { success, error, challengeId } = await createChallenge(
       values,
-      session?.user?.id
+      session?.user?.id,
     )
     if (success) redirect(`/challenge/${success}`)
     if (error) {
@@ -77,6 +83,41 @@ const ChallengeSettingsForm = ({
       if (challengeId) setActiveChallenge(challengeId)
     }
   }
+  async function startQuick() {
+    const { success, error, challengeId } = await createChallenge(
+      {
+        type: 'any',
+        category: 'any',
+        difficulty: 'any',
+        numberOfQuestions: 10,
+      },
+      session?.user?.id,
+    )
+    if (success) redirect(`/challenge/${success}`)
+    if (error) {
+      setErrorMessage(error)
+      if (challengeId) setActiveChallenge(challengeId)
+      toast({
+        title: "You can't start a challenge.",
+        description: `You already have one active, Please go back to it.`,
+        action: (
+          <ToastAction altText="go back to challenge">
+            <Link href={`/challenge/${challengeId || ''}`}>Go back</Link>
+          </ToastAction>
+        ),
+      })
+    }
+  }
+
+  useEffect(() => {
+    let isQuick = false
+    // varify quick param is true or else is false
+    if (quickParam === 'true') {
+      isQuick = true
+    }
+    if (isQuick) startQuick()
+  }, [])
+
   return (
     <div className="space-y-8">
       <div className="space-y-2">
@@ -94,7 +135,7 @@ const ChallengeSettingsForm = ({
                 presetsList.map((preset, index) => (
                   <SelectItem
                     value={JSON.stringify(preset.settings)}
-                    key={`preset-item:${preset.name}-${index}`}
+                    key={`preset- item: ${preset.name} - ${index}`}
                   >
                     {preset.name}
                   </SelectItem>
@@ -131,7 +172,7 @@ const ChallengeSettingsForm = ({
                     {...field}
                     onChange={(e) =>
                       field.onChange(
-                        e.target.value === '' ? '' : e.target.valueAsNumber
+                        e.target.value === '' ? '' : e.target.valueAsNumber,
                       )
                     }
                   />
@@ -161,7 +202,7 @@ const ChallengeSettingsForm = ({
                     <SelectItem value="any">Any Category</SelectItem>
                     {categories.map((category) => (
                       <SelectItem
-                        key={`category-item: ${category.id}`}
+                        key={`category - item: ${category.id}`}
                         value={`${category.id}`}
                       >
                         {category.name}
@@ -243,7 +284,10 @@ const ChallengeSettingsForm = ({
             <p className="text-sm text-destructive" aria-live="polite">
               <span> {errorMessage} </span>
               {activeChallenge ? (
-                <Link href={`/challenge/${activeChallenge}`} className='underline'>
+                <Link
+                  href={`/challenge/${activeChallenge}`}
+                  className="underline"
+                >
                   go back to it
                 </Link>
               ) : (

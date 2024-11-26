@@ -148,6 +148,7 @@ export const getChallenge = async (
         settings: challenge.settings,
         status: challenge.status,
         tries: challenge.tries,
+        id: challenge._id.toString()
       },
     }
   } catch (error) {

@@ -56,7 +56,7 @@ const SideNavigation: React.FC<React.ComponentPropsWithoutRef<'div'>> = (
   return (
     <div
       className={clsx(
-        'fixed top-0 pb-6 h-screen min-w-fit flex flex-col xl:static transition-all duration-300 space-y-8 bg-background border-r overflow-y-scroll scrollbar-hide',
+        'fixed top-0 pb-6 h-screen min-w-fit flex flex-col xl:sticky transition-all duration-300 space-y-8 bg-background border-r overflow-y-scroll scrollbar-hide',
 
         isSideNavVisible ? 'left-0 w-fit pl-8 pr-4 pt-6' : '-left-full',
         className

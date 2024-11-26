@@ -23,7 +23,7 @@ const Results = async ({
   if (challenge.status === 'active') return notFound()
 
   return (
-    <main className='mt-16 space-y-8'>
+    <main className='mt-16 space-y-8 mb-16'>
       <Score challenge={challenge} />
       <QuestionsResult challenge={challenge} />
     </main>

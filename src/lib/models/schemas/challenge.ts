@@ -3,10 +3,12 @@ import { ChallengeSettingsSchema } from './challengeSettings'
 import { QuestionSchema } from './question'
 
 export type ChallengeType = mongoose.InferSchemaType<typeof ChallengeSchema>
-export type ChallengeSubsetType = Pick<
+export type ChallengeSubsetWithId = Pick<
   ChallengeType,
   'questions' | 'settings' | 'status' | 'tries'
->;
+>
+export type ChallengeSubsetType = ChallengeSubsetWithId & { id: string }
+
 export const ChallengeSchema = new Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,

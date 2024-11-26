@@ -20,7 +20,7 @@ const Challenge = async () => {
   const categories = await getCategories()
   return (
     <main>
-      <Container className="mt-24">
+      <Container className="mt-24 mb-16">
         <Card className="w-full md:w-[350px] lg:w-[400px] m-auto">
           <CardHeader>
             <CardTitle>Match Settings</CardTitle>
