@@ -22,6 +22,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { PresetType } from '@/lib/models/schemas/preset'
@@ -47,6 +57,7 @@ const ChallengeSettingsForm = ({
   const { toast } = useToast()
   const [errorMessage, setErrorMessage] = useState('')
   const [activeChallenge, setActiveChallenge] = useState('')
+  const [quickChallengeStart, setQuickChallengeStart] = useState(false)
   const { data: session } = useSession()
   if (!session) notFound()
   const [presetsList, setPresetsList] = useState<PresetType[]>(presets)
@@ -115,7 +126,7 @@ const ChallengeSettingsForm = ({
     if (quickParam === 'true') {
       isQuick = true
     }
-    if (isQuick) startQuick()
+    if (isQuick) setQuickChallengeStart(true)
   }, [quickParam, startQuick])
 
   return (
@@ -308,6 +319,21 @@ const ChallengeSettingsForm = ({
           </Button>
         </form>
       </Form>
+      <AlertDialog open={quickChallengeStart}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Start Quick Challenge?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Once the challenge starts, you won’t be able to cancel it. Are you
+              sure you’re ready to begin?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setQuickChallengeStart(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={startQuick}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

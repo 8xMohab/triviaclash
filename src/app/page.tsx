@@ -1,13 +1,10 @@
-import { auth, signOut } from '@/auth'
 import Container from '@/components/container'
 import Heading from '@/components/typography/heading'
 import Text from '@/components/typography/text'
 import { Button } from '@/components/ui/button'
-import Image from 'next/image'
 import Link from 'next/link'
 
 export default async function Home() {
-  const session = await auth()
 
   return (
     <main>
@@ -27,31 +24,6 @@ export default async function Home() {
             </Button>
           </div>
         </section>
-        <div>
-          {session?.user ? (
-            <div className="flex items-center justify-center">
-              <Image
-                src="/default-avatar.png"
-                alt="avatar"
-                width={64}
-                height={64}
-              />{' '}
-              {session.user.name}
-              <div>
-                <form
-                  action={async () => {
-                    'use server'
-                    await signOut()
-                  }}
-                >
-                  <button type="submit">Sign Out</button>
-                </form>
-              </div>
-            </div>
-          ) : (
-            ''
-          )}
-        </div>
       </Container>
     </main>
   )
