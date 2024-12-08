@@ -1,9 +1,0 @@
-// create getPreset data action
-// create the preset comonent (it can fetch the presets on it own too)
-// create the form using shadcn form component
-// create server acion to call the api, create a challenge in database
-// if challenge is created redirect use to /challenge/[challengeId]
-
-
-
-side missions:
