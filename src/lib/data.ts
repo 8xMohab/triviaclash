@@ -76,7 +76,7 @@ export const getPresets = async (userId: string | undefined) => {
 
 export const getActiveChallenge = async (
   userId: string | undefined,
-  challengeId: string | undefined
+  challengeId: string | undefined,
 ): Promise<{ challenge?: ChallengeSubsetType; error?: string }> => {
   try {
     if (!userId) throw new Error('No user id provided.')
@@ -110,6 +110,7 @@ export const getActiveChallenge = async (
         settings: activeChallenge.settings,
         status: activeChallenge.status,
         tries: activeChallenge.tries,
+        id: activeChallenge._id.toString(),
       },
     }
   } catch (error) {
@@ -122,7 +123,7 @@ export const getActiveChallenge = async (
 
 export const getChallenge = async (
   userId: string | undefined,
-  challengeId: string | undefined
+  challengeId: string | undefined,
 ): Promise<{ challenge?: ChallengeSubsetType; error?: string }> => {
   try {
     if (!userId) throw new Error('No user id provided.')
@@ -148,7 +149,7 @@ export const getChallenge = async (
         settings: challenge.settings,
         status: challenge.status,
         tries: challenge.tries,
-        id: challenge._id.toString()
+        id: challenge._id.toString(),
       },
     }
   } catch (error) {

@@ -35,7 +35,9 @@ const Score = ({ challenge }: { challenge: ChallengeSubsetType }) => {
   const tryParam = searchParams.get('try')
   const tryNumber = validateTryParam(tryParam || '', challenge.tries.length)
   if (challenge.tries.length === 0) return notFound()
-  const tryAnswers = challenge.tries[tryNumber]
+    // @ts-expect-error I FAILED
+  const tryAnswers: Array<string> = challenge.tries[tryNumber]
+
   let score = 0
   challenge.questions.map(({ correct_answer }, index) => {
     if (correct_answer === tryAnswers[index]) score += 1

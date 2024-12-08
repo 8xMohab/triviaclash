@@ -9,7 +9,7 @@ import {
 
 import { decode } from 'he'
 import React, { useState } from 'react'
-import { ChallengeType } from '@/lib/models/schemas/challenge'
+import { ChallengeSubsetType } from '@/lib/models/schemas/challenge'
 import clsx from 'clsx'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -33,7 +33,7 @@ const Questions = ({
   challenge,
   challengeId,
 }: {
-  challenge: ChallengeType
+  challenge: ChallengeSubsetType
   challengeId: string
 }) => {
   const [currectQuestion, setCurrectQuestion] = useState(0)
@@ -76,8 +76,8 @@ const Questions = ({
                 difficulty === 'easy'
                   ? 'text-green-500'
                   : difficulty === 'medium'
-                  ? 'text-yellow-500'
-                  : 'text-destructive'
+                    ? 'text-yellow-500'
+                    : 'text-destructive',
               )}
             >
               {difficulty}

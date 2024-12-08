@@ -18,7 +18,8 @@ const QuestionsResult = ({ challenge }: { challenge: ChallengeSubsetType }) => {
   const searchParams = useSearchParams()
   const tryParam = searchParams.get('try')
   const tryNumber = validateTryParam(tryParam || '', challenge.tries.length)
-  const tryAnswers = challenge.tries[tryNumber]
+  // @ts-expect-error I FAILED
+  const tryAnswers: Array<string> = challenge.tries[tryNumber]
 
   return (
     <div className="space-y-8">
@@ -76,7 +77,13 @@ const QuestionsResult = ({ challenge }: { challenge: ChallengeSubsetType }) => {
                 </div>
               </CardContent>
               <CardFooter>
-                <span className={clsx(correct_answer === tryAnswers[index]? "text-green-500" : "text-red-500")}>
+                <span
+                  className={clsx(
+                    correct_answer === tryAnswers[index]
+                      ? 'text-green-500'
+                      : 'text-red-500',
+                  )}
+                >
                   {correct_answer === tryAnswers[index]
                     ? 'Answer Correct'
                     : 'Answer Incorrect'}

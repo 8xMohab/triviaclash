@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { Suspense, useState } from 'react'
 import { z } from 'zod'
 import { authenticateUser, createUser } from '@/lib/actions'
 import { Button } from '@/components/ui/button'
@@ -45,7 +45,7 @@ const RegistrationForm = () => {
       setErrorMessage(error)
       if (fields) {
         fields.map((field) => {
-          if(field.name === "name") return
+          if (field.name === 'name') return
           setError(field.name, { message: field.message })
         })
       }
@@ -131,4 +131,12 @@ const RegistrationForm = () => {
     </Form>
   )
 }
-export default RegistrationForm
+
+// Wrap the RegistrationForm inside Suspense
+const SuspendedRegistrationForm = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <RegistrationForm />
+  </Suspense>
+)
+
+export default SuspendedRegistrationForm
