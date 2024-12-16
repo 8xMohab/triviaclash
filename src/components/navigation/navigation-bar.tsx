@@ -7,7 +7,7 @@ import Logo from '../logo'
 import navigationLinks from './data'
 
 const NavigationBar: React.FC<React.ComponentPropsWithoutRef<'div'>> = (
-  props
+  props,
 ) => {
   const pathname = usePathname()
   const { className, ...restProps } = props
