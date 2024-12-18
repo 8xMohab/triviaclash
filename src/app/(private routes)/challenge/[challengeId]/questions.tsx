@@ -27,6 +27,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { addAnswer } from '@/lib/actions'
 import { redirect } from 'next/navigation'
+import Container from '@/components/container'
 
 let userAnswers: Array<string> = []
 const Questions = ({
@@ -64,76 +65,81 @@ const Questions = ({
     }
   }
   return (
-    <main className="mt-16">
-      <Card>
-        <CardHeader>
-          <CardTitle className="leading-normal">{decode(question)}</CardTitle>
-          <CardDescription>
-            Category: {decode(category)}, Difficulty:{' '}
-            <span
-              className={clsx(
-                'capitalize',
-                difficulty === 'easy'
-                  ? 'text-green-500'
-                  : difficulty === 'medium'
-                    ? 'text-yellow-500'
-                    : 'text-destructive',
-              )}
-            >
-              {difficulty}
-            </span>
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="user_answer"
-                render={({ field }) => (
-                  <FormItem className="space-y-8">
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="flex flex-col space-y-4"
-                      >
-                        {incorrect_answers.map((answer) => (
-                          <FormItem
-                            key={`answer_${answer}`}
-                            className="flex items-center space-x-3 space-y-0"
-                          >
-                            <FormControl>
-                              <RadioGroupItem value={answer} />
-                            </FormControl>
-                            <FormLabel className="font-normal">
-                              {decode(answer)}
-                            </FormLabel>
-                          </FormItem>
-                        ))}
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+    <Container>
+      <main className="mt-16">
+        <Card>
+          <CardHeader>
+            <CardTitle className="leading-normal">{decode(question)}</CardTitle>
+            <CardDescription>
+              Category: {decode(category)}, Difficulty:{' '}
+              <span
+                className={clsx(
+                  'capitalize',
+                  difficulty === 'easy'
+                    ? 'text-green-500'
+                    : difficulty === 'medium'
+                      ? 'text-yellow-500'
+                      : 'text-destructive',
                 )}
-              />
-              {errorMessage ? (
-                <p className="text-sm text-destructive" aria-live="polite">
-                  {errorMessage}
-                </p>
-              ) : (
-                ''
-              )}
-              <Button type="submit">
-                {userAnswers.length + 1 < challenge.questions.length
-                  ? 'Next Question'
-                  : 'Finish Challenge'}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </main>
+              >
+                {difficulty}
+              </span>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-8"
+              >
+                <FormField
+                  control={form.control}
+                  name="user_answer"
+                  render={({ field }) => (
+                    <FormItem className="space-y-8">
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="flex flex-col space-y-4"
+                        >
+                          {incorrect_answers.map((answer) => (
+                            <FormItem
+                              key={`answer_${answer}`}
+                              className="flex items-center space-x-3 space-y-0"
+                            >
+                              <FormControl>
+                                <RadioGroupItem value={answer} />
+                              </FormControl>
+                              <FormLabel className="font-normal">
+                                {decode(answer)}
+                              </FormLabel>
+                            </FormItem>
+                          ))}
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {errorMessage ? (
+                  <p className="text-sm text-destructive" aria-live="polite">
+                    {errorMessage}
+                  </p>
+                ) : (
+                  ''
+                )}
+                <Button type="submit">
+                  {userAnswers.length + 1 < challenge.questions.length
+                    ? 'Next Question'
+                    : 'Finish Challenge'}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </main>
+    </Container>
   )
 }
 

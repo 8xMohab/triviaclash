@@ -2,7 +2,7 @@ import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import type { Provider } from 'next-auth/providers'
 import { loginFormSchema } from './lib/zodSchema'
-import navigationLinks from './components/navigation/data'
+import navigationLinks from './components/navigation/links'
 
 const providers: Provider[] = [
   Credentials({

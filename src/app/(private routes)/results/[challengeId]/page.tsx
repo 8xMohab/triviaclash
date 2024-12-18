@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import React from 'react'
 import QuestionsResult from './results'
 import Score from './score'
+import Container from '@/components/container'
 
 const Results = async ({
   params,
@@ -23,10 +24,12 @@ const Results = async ({
   if (challenge.status === 'active') return notFound()
 
   return (
-    <main className='mt-16 space-y-8 mb-16'>
-      <Score challenge={challenge} />
-      <QuestionsResult challenge={challenge} />
-    </main>
+    <Container>
+      <main className="mt-16 space-y-8 mb-16">
+        <Score challenge={challenge} />
+        <QuestionsResult challenge={challenge} />
+      </main>
+    </Container>
   )
 }
 

@@ -28,7 +28,7 @@ export default async function SignInPage(props: {
           <CardContent className="space-y-8 flex flex-col">
             <SignInForm />
             <Link
-              href={`/register${redirectUrl}`}
+              href={`/signup${redirectUrl}`}
               className="text-muted-foreground text-sm"
             >
               Don&apos;t have an account?

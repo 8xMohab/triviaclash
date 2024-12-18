@@ -1,10 +1,7 @@
 import {
   BookOpenTextIcon,
-  ChartAreaIcon,
   CircleAlertIcon,
   HomeIcon,
-  Package2Icon,
-  SettingsIcon,
   SwordsIcon,
   UserIcon,
 } from 'lucide-react'
@@ -25,12 +22,12 @@ const navigationLinks = {
   ],
   authentication: [
     {
-      text: 'Login',
+      text: 'Sign in',
       href: '/signin',
     },
     {
       text: 'Sign up',
-      href: '/register',
+      href: '/signup',
     },
   ],
   private: [
@@ -52,16 +49,6 @@ const navigationLinks = {
           href: '/profile',
           icon: <UserIcon />,
         },
-        {
-          text: 'History',
-          href: '/profile/history',
-          icon: <Package2Icon />,
-        },
-        {
-          text: 'Statistics',
-          href: '/profile/statistics',
-          icon: <ChartAreaIcon />,
-        },
       ],
     },
     {
@@ -82,11 +69,6 @@ const navigationLinks = {
           href: '/about',
           icon: <CircleAlertIcon />,
         },
-        {
-          text: 'Settings',
-          href: '/settings',
-          icon: <SettingsIcon />,
-        },
       ],
     },
   ],
@@ -94,4 +76,5 @@ const navigationLinks = {
 
 export const publicLinks = navigationLinks.public
 export const privateLinks = navigationLinks.private
+export const authLinks = navigationLinks.authentication
 export default navigationLinks

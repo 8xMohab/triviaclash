@@ -96,7 +96,7 @@ const Score = ({ challenge }: { challenge: ChallengeSubsetType }) => {
             </SelectContent>
           </Select>
         </CardContent>
-        <CardFooter className="flex items-center justify-between">
+        <CardFooter className="flex flex-col space-y-4 lg:flex-row lg:space-y-0 items-center justify-between">
           <Link href="/challenge">
             <Button>Start New</Button>
           </Link>
